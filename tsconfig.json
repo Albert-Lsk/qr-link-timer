@@ -15,7 +15,7 @@
     "outDir": "./dist",
     "rootDir": "./",
     "removeComments": false,
-    "noEmit": false,
+    "noEmit": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -29,19 +29,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["./shared/src/*"],
-      "@frontend/*": ["./frontend/src/*"],
-      "@backend/*": ["./backend/src/*"]
-    }
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx"
+    "frontend/**/*.ts",
+    "frontend/**/*.tsx"
   ],
   "exclude": [
     "node_modules",
@@ -56,12 +48,6 @@
   "references": [
     {
       "path": "./frontend"
-    },
-    {
-      "path": "./backend"
-    },
-    {
-      "path": "./shared"
     }
   ]
 }
