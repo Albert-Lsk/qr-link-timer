@@ -1,6 +1,7 @@
 # QR Link Timer
 
 一个可开源交付的时效性二维码生成器。输入任意 URL，设置有效期，系统会生成一个可追踪的二维码；过期后访问会自动跳转到失效提示页。
+<img width="1313" height="1229" alt="image" src="https://github.com/user-attachments/assets/b01eeecd-2703-4c44-b7b4-2fe4bfb08858" />
 
 ## 当前状态
 
