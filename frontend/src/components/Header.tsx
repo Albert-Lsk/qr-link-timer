@@ -1,22 +1,23 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { QrCode, Clock, History, Info } from 'lucide-react'
+import { QrCode, Clock, History, Info, Menu, X } from 'lucide-react'
 import { clsx } from 'clsx'
 
 const navigation = [
   { name: '首页', href: '/', icon: QrCode },
   { name: '历史记录', href: '/history', icon: History },
-  { name: '关于', href: '/about', icon: Info },
+  { name: '关于', href: '/about', icon: Info }
 ]
 
 export default function Header() {
   const location = useLocation()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2" onClick={() => setMobileMenuOpen(false)}>
             <div className="p-2 bg-primary-600 rounded-lg">
               <Clock className="h-6 w-6 text-white" />
             </div>
@@ -26,12 +27,11 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Navigation */}
           <nav className="hidden md:flex space-x-1">
             {navigation.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.href
-              
+
               return (
                 <Link
                   key={item.name}
@@ -50,18 +50,43 @@ export default function Header() {
             })}
           </nav>
 
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               type="button"
+              aria-label="切换导航菜单"
               className="p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+              onClick={() => setMobileMenuOpen((value) => !value)}
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
+
+        {mobileMenuOpen && (
+          <nav className="md:hidden pb-4 space-y-2">
+            {navigation.map((item) => {
+              const Icon = item.icon
+              const isActive = location.pathname === item.href
+
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={clsx(
+                    'flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary-100 text-primary-700'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{item.name}</span>
+                </Link>
+              )
+            })}
+          </nav>
+        )}
       </div>
     </header>
   )

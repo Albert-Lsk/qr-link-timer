@@ -1,38 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { BarChart3, QrCode, Clock, TrendingUp } from 'lucide-react'
 import { Card, CardHeader, CardBody } from './Card'
 import LoadingSpinner from './LoadingSpinner'
-import { QRCodeStats } from '@/types'
+import { useQRCodeStats } from '@/hooks/useQRCodes'
 
-export default function StatsOverview() {
-  const [stats, setStats] = useState<QRCodeStats | null>(null)
-  const [loading, setLoading] = useState(true)
+interface StatsOverviewProps {
+  refreshKey?: number
+}
+
+export default function StatsOverview({ refreshKey = 0 }: StatsOverviewProps) {
+  const { stats, loading, error, refreshStats } = useQRCodeStats()
 
   useEffect(() => {
-    // Mock API call to fetch stats
-    const fetchStats = async () => {
-      try {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // Mock data
-        const mockStats: QRCodeStats = {
-          totalCodes: 15,
-          activeCodes: 8,
-          expiredCodes: 7,
-          totalAccess: 342
-        }
-        
-        setStats(mockStats)
-      } catch (error) {
-        console.error('Failed to fetch stats:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchStats()
-  }, [])
+    refreshStats()
+  }, [refreshKey, refreshStats])
 
   if (loading) {
     return (
@@ -60,7 +41,7 @@ export default function StatsOverview() {
           </h3>
         </CardHeader>
         <CardBody className="text-center py-8">
-          <p className="text-gray-600">暂无统计数据</p>
+          <p className="text-gray-600">{error || '暂无统计数据'}</p>
         </CardBody>
       </Card>
     )
@@ -102,10 +83,10 @@ export default function StatsOverview() {
         </h3>
       </CardHeader>
       <CardBody className="space-y-4">
-        {statItems.map((item, index) => {
+        {statItems.map((item) => {
           const Icon = item.icon
           return (
-            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div key={item.label} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center space-x-3">
                 <div className={`p-2 rounded-lg bg-white ${item.color}`}>
                   <Icon className="h-4 w-4" />
@@ -119,9 +100,8 @@ export default function StatsOverview() {
           )
         })}
 
-        {/* Success Rate */}
         {stats.totalCodes > 0 && (
-          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-emerald-50 rounded-lg">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">活跃率</span>
               <span className="text-sm font-bold text-blue-600">
@@ -130,16 +110,13 @@ export default function StatsOverview() {
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                style={{
-                  width: `${(stats.activeCodes / stats.totalCodes) * 100}%`
-                }}
+                className="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(stats.activeCodes / stats.totalCodes) * 100}%` }}
               />
             </div>
           </div>
         )}
 
-        {/* Average Access */}
         {stats.totalCodes > 0 && (
           <div className="text-center text-sm text-gray-600 mt-4">
             平均每个二维码访问 {Math.round(stats.totalAccess / stats.totalCodes)} 次

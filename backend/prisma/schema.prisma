@@ -1,0 +1,50 @@
+// Prisma schema file
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model QRCode {
+  id          String   @id @default(cuid())
+  originalUrl String
+  qrCodeData  String   // Base64 encoded QR code image
+  title       String?
+  description String?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  isActive    Boolean  @default(true)
+  accessCount Int      @default(0)
+  
+  // Relations
+  accessLogs AccessLog[]
+  
+  // Indexes for better performance
+  @@index([expiresAt])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("qrcodes")
+}
+
+model AccessLog {
+  id         String   @id @default(cuid())
+  qrCodeId   String
+  accessedAt DateTime @default(now())
+  userAgent  String?
+  ipAddress  String?
+  referer    String?
+  
+  // Relations
+  qrCode QRCode @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  
+  // Indexes
+  @@index([qrCodeId])
+  @@index([accessedAt])
+  @@map("access_logs")
+}

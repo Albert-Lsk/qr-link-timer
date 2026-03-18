@@ -1,10 +1,12 @@
 import axios, { AxiosResponse } from 'axios'
 import { QRCode, CreateQRCodeRequest, QRCodeStats, ApiResponse, ApiError } from '@/types'
 
+const apiBaseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3001').replace(/\/$/, '')
+
 // 创建axios实例
 const api = axios.create({
-  baseURL: '/api',
-  timeout: 10000,
+  baseURL: `${apiBaseUrl}/api`,
+  timeout: Number(import.meta.env.VITE_API_TIMEOUT || 10000),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -87,8 +89,8 @@ export const qrCodeService = {
    * 获取所有二维码列表
    */
   async getAll(): Promise<QRCode[]> {
-    const response = await api.get<ApiResponse<QRCode[]>>('/qrcodes')
-    return response.data.data
+    const response = await api.get<ApiResponse<{ qrCodes: QRCode[] }>>('/qrcodes')
+    return response.data.data.qrCodes
   },
 
   /**
@@ -118,7 +120,7 @@ export const qrCodeService = {
    * 访问二维码（重定向）
    */
   async access(id: string): Promise<{ redirectUrl: string }> {
-    const response = await api.get<ApiResponse<{ redirectUrl: string }>>(`/redirect/${id}`)
+    const response = await axios.get<ApiResponse<{ redirectUrl: string }>>(`${apiBaseUrl}/redirect/${id}`)
     return response.data.data
   },
 

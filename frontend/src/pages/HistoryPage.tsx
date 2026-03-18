@@ -1,64 +1,61 @@
-import { useState, useEffect } from 'react'
-import { Search, Filter, Download, Trash2, ExternalLink } from 'lucide-react'
-import { Card, CardHeader, CardBody } from '@/components/Card'
+import { useEffect, useMemo, useState } from 'react'
+import { Search, Download } from 'lucide-react'
+import { Card, CardBody } from '@/components/Card'
 import Button from '@/components/Button'
 import Input from '@/components/Input'
-import Badge from '@/components/Badge'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import QRCodeCard from '@/components/QRCodeCard'
 import { QRCode } from '@/types'
+import { qrCodeService } from '@/services/api'
 
 export default function HistoryPage() {
   const [qrCodes, setQrCodes] = useState<QRCode[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'expired'>('all')
+  const [loadError, setLoadError] = useState<string | null>(null)
 
-  // Mock data for demonstration
   useEffect(() => {
-    const mockData: QRCode[] = [
-      {
-        id: '1',
-        originalUrl: 'https://example.com/document',
-        qrCodeData: 'data:image/png;base64,mock',
-        createdAt: '2024-01-15T10:30:00Z',
-        expiresAt: '2024-01-22T10:30:00Z',
-        isActive: true,
-        accessCount: 15,
-        title: '重要文档分享',
-        description: '团队协作文档'
-      },
-      {
-        id: '2',
-        originalUrl: 'https://github.com/albert-lsk/qr-link-timer',
-        qrCodeData: 'data:image/png;base64,mock',
-        createdAt: '2024-01-10T14:20:00Z',
-        expiresAt: '2024-01-15T14:20:00Z',
-        isActive: false,
-        accessCount: 32,
-        title: 'GitHub项目链接'
+    const fetchHistory = async () => {
+      try {
+        setLoading(true)
+        setLoadError(null)
+        const data = await qrCodeService.getAll()
+        setQrCodes(data)
+      } catch (error) {
+        console.error('Failed to fetch QR code history:', error)
+        setLoadError(error instanceof Error ? error.message : '获取历史记录失败')
+      } finally {
+        setLoading(false)
       }
-    ]
+    }
 
-    setTimeout(() => {
-      setQrCodes(mockData)
-      setLoading(false)
-    }, 1000)
+    fetchHistory()
   }, [])
 
-  const filteredQrCodes = qrCodes.filter(qr => {
-    const matchesSearch = qr.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         qr.originalUrl.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesFilter = filterStatus === 'all' || 
-                         (filterStatus === 'active' && qr.isActive) ||
-                         (filterStatus === 'expired' && !qr.isActive)
+  const filteredQrCodes = useMemo(() => {
+    return qrCodes.filter((qr) => {
+      const matchesSearch =
+        qr.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        qr.originalUrl.toLowerCase().includes(searchTerm.toLowerCase())
 
-    return matchesSearch && matchesFilter
-  })
+      const matchesFilter =
+        filterStatus === 'all' ||
+        (filterStatus === 'active' && qr.isActive) ||
+        (filterStatus === 'expired' && !qr.isActive)
 
-  const handleDelete = (id: string) => {
-    setQrCodes(prev => prev.filter(qr => qr.id !== id))
+      return Boolean(matchesSearch) && matchesFilter
+    })
+  }, [filterStatus, qrCodes, searchTerm])
+
+  const handleDelete = async (id: string) => {
+    try {
+      await qrCodeService.delete(id)
+      setQrCodes((prev) => prev.filter((qr) => qr.id !== id))
+    } catch (error) {
+      console.error('Failed to delete QR code:', error)
+      setLoadError(error instanceof Error ? error.message : '删除二维码失败')
+    }
   }
 
   const exportData = () => {
@@ -82,7 +79,6 @@ export default function HistoryPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">历史记录</h1>
@@ -94,7 +90,14 @@ export default function HistoryPage() {
         </Button>
       </div>
 
-      {/* Stats Cards */}
+      {loadError && (
+        <Card>
+          <CardBody className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl">
+            {loadError}
+          </CardBody>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardBody className="text-center">
@@ -105,7 +108,7 @@ export default function HistoryPage() {
         <Card>
           <CardBody className="text-center">
             <div className="text-2xl font-bold text-green-600">
-              {qrCodes.filter(qr => qr.isActive).length}
+              {qrCodes.filter((qr) => qr.isActive).length}
             </div>
             <div className="text-sm text-gray-600">活跃中</div>
           </CardBody>
@@ -120,7 +123,6 @@ export default function HistoryPage() {
         </Card>
       </div>
 
-      {/* Filters */}
       <Card>
         <CardBody>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -128,30 +130,18 @@ export default function HistoryPage() {
               <Input
                 placeholder="搜索标题或链接..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(event) => setSearchTerm(event.target.value)}
                 className="w-full"
               />
             </div>
             <div className="flex space-x-2">
-              <Button
-                variant={filterStatus === 'all' ? 'primary' : 'ghost'}
-                size="sm"
-                onClick={() => setFilterStatus('all')}
-              >
+              <Button variant={filterStatus === 'all' ? 'primary' : 'ghost'} size="sm" onClick={() => setFilterStatus('all')}>
                 全部
               </Button>
-              <Button
-                variant={filterStatus === 'active' ? 'primary' : 'ghost'}
-                size="sm"
-                onClick={() => setFilterStatus('active')}
-              >
+              <Button variant={filterStatus === 'active' ? 'primary' : 'ghost'} size="sm" onClick={() => setFilterStatus('active')}>
                 活跃
               </Button>
-              <Button
-                variant={filterStatus === 'expired' ? 'primary' : 'ghost'}
-                size="sm"
-                onClick={() => setFilterStatus('expired')}
-              >
+              <Button variant={filterStatus === 'expired' ? 'primary' : 'ghost'} size="sm" onClick={() => setFilterStatus('expired')}>
                 已过期
               </Button>
             </div>
@@ -159,7 +149,6 @@ export default function HistoryPage() {
         </CardBody>
       </Card>
 
-      {/* QR Code List */}
       {filteredQrCodes.length === 0 ? (
         <Card>
           <CardBody className="text-center py-12">
@@ -170,21 +159,16 @@ export default function HistoryPage() {
               {searchTerm || filterStatus !== 'all' ? '没有找到匹配的记录' : '暂无历史记录'}
             </h3>
             <p className="text-gray-600">
-              {searchTerm || filterStatus !== 'all' 
-                ? '尝试调整搜索条件或筛选器' 
-                : '创建您的第一个二维码吧！'
-              }
+              {searchTerm || filterStatus !== 'all'
+                ? '尝试调整搜索条件或筛选器'
+                : '创建您的第一个二维码吧！'}
             </p>
           </CardBody>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQrCodes.map((qrCode) => (
-            <QRCodeCard
-              key={qrCode.id}
-              qrCode={qrCode}
-              onDelete={() => handleDelete(qrCode.id)}
-            />
+            <QRCodeCard key={qrCode.id} qrCode={qrCode} onDelete={handleDelete} />
           ))}
         </div>
       )}

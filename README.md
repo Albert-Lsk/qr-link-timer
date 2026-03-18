@@ -1,188 +1,141 @@
-# 🔗 QR Link Timer - 时效性二维码生成器
+# QR Link Timer
 
-## 📋 项目简介
+一个可开源交付的时效性二维码生成器。输入任意 URL，设置有效期，系统会生成一个可追踪的二维码；过期后访问会自动跳转到失效提示页。
 
-QR Link Timer 是一个时效性二维码生成器，允许用户输入链接并设置二维码的有效期。当达到设定的时间限制后，二维码将自动失效。
+## 当前状态
 
-## ✨ 核心功能
+- 已完成前后端联调
+- 已通过本地构建验证
+- 已通过核心接口冒烟测试
+- 已清理个人仓库地址和本地敏感配置
 
-- 🔗 **链接输入** - 用户可以粘贴任意有效的URL链接
-- ⏰ **时间设置** - 支持设置二维码有效期（小时/天/周）
-- 📱 **二维码生成** - 实时生成高质量二维码
-- 🔒 **自动过期** - 超过设定时间后二维码自动失效
-- 📊 **访问统计** - 查看二维码访问次数和历史记录
-- 💾 **历史管理** - 管理已生成的二维码
+## 功能
 
-## 🏗️ 技术架构
+- 创建带有效期的二维码
+- 保存二维码标题和描述
+- 查看历史记录
+- 查看总量、活跃数、过期数、访问次数
+- 访问二维码时自动记录扫描次数
+- 过期二维码返回失效页面
 
-### 前端技术栈
-- **React 18** + **TypeScript** - 现代化前端框架
-- **Vite** - 快速构建工具
-- **Tailwind CSS** - 实用程序优先的CSS框架
-- **Axios** - HTTP客户端
+## 技术栈
 
-### 后端技术栈
-- **Node.js** + **Express.js** - 轻量级API服务
-- **TypeScript** - 类型安全
-- **Prisma ORM** - 数据库操作
-- **SQLite** (开发) / **PostgreSQL** (生产) - 数据存储
+- 前端：React 18、TypeScript、Vite、Tailwind CSS、Axios
+- 后端：Node.js、Express、TypeScript、Prisma
+- 数据库：SQLite（默认），后续可切 PostgreSQL
 
-### 其他工具
-- **qrcode** - 二维码生成
-- **Docker** - 容器化部署
-- **Git** - 版本控制
+## 项目结构
 
-## 📁 项目结构
-
-```
+```text
 qr-link-timer/
-├── frontend/              # React前端应用
-│   ├── src/
-│   │   ├── components/    # UI组件
-│   │   ├── pages/         # 页面组件
-│   │   ├── hooks/         # 自定义Hooks
-│   │   ├── types/         # TypeScript类型
-│   │   └── utils/         # 工具函数
-│   └── public/            # 静态资源
-├── backend/               # Node.js后端服务
-│   ├── src/
-│   │   ├── controllers/   # 控制器
-│   │   ├── models/        # 数据模型
-│   │   ├── routes/        # 路由
-│   │   ├── middleware/    # 中间件
-│   │   └── utils/         # 工具函数
-│   └── prisma/           # 数据库配置
-├── shared/               # 共享类型定义
-├── docs/                 # 项目文档
-└── docker-compose.yml    # 容器配置
+├─ frontend/      # React 前端
+├─ backend/       # Express + Prisma 后端
+├─ shared/        # 共享构建配置
+├─ docs/          # API / 环境 / 项目说明
+├─ .env.example
+└─ docker-compose.yml
 ```
 
-## 🚀 快速开始
+## 快速开始
 
-### 环境要求
-- Node.js >= 18.0.0
-- npm >= 8.0.0
-- Git
+### 1. 安装依赖
 
-### 安装步骤
-
-1. **克隆项目**
 ```bash
-git clone https://github.com/Albert-Lsk/qr-link-timer.git
-cd qr-link-timer
-```
-
-2. **安装依赖**
-```bash
-# 安装前端依赖
-cd frontend
-npm install
-
-# 安装后端依赖
-cd ../backend
-npm install
-
-# 安装共享依赖
-cd ../shared
 npm install
 ```
 
-3. **配置环境变量**
+### 2. 配置环境变量
+
 ```bash
 cp .env.example .env
-# 编辑 .env 文件，配置数据库连接等信息
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
 
-4. **启动开发服务器**
+PowerShell 也可以这样复制：
+
+```powershell
+Copy-Item ".env.example" ".env"
+Copy-Item "backend/.env.example" "backend/.env"
+Copy-Item "frontend/.env.example" "frontend/.env"
+```
+
+默认本地配置已经足够启动开发环境；如果你要公开部署，请至少修改：
+
+- `APP_BASE_URL`
+- `CORS_ORIGIN`
+- `DATABASE_URL`
+- `JWT_SECRET`（如果后续启用认证）
+
+### 3. 启动开发环境
 
 ```bash
-# 启动后端服务 (端口 3001)
-cd backend
-npm run dev
-
-# 启动前端服务 (端口 3000)
-cd frontend
 npm run dev
 ```
 
-5. **访问应用**
-- 前端: http://localhost:3000
-- 后端API: http://localhost:3001
+访问地址：
 
-## 📖 API文档
+- 前端：http://localhost:3000
+- 后端：http://localhost:3001
+- 健康检查：http://localhost:3001/health
 
-详细的API文档请查看 [API.md](./docs/API.md)
-
-## 🐳 Docker 部署
+### 4. 构建生产版本
 
 ```bash
-# 使用 Docker Compose 启动所有服务
-docker-compose up -d
-
-# 查看运行状态
-docker-compose ps
-
-# 停止服务
-docker-compose down
+npm run build
 ```
 
-## 📝 数据库模型
+## 可用脚本
 
-### QRCodes 表
-```sql
-- id: 主键ID
-- original_url: 原始链接
-- qr_code_data: 二维码数据
-- created_at: 创建时间
-- expires_at: 过期时间
-- is_active: 是否有效
-- access_count: 访问次数
+根目录：
+
+- `npm run dev`：同时启动前后端
+- `npm run build`：构建 shared、backend、frontend
+- `npm run db:generate`：生成 Prisma Client
+- `npm run db:migrate`：执行数据库迁移
+
+前端：
+
+- `npm --workspace frontend run dev`
+- `npm --workspace frontend run build`
+
+后端：
+
+- `npm --workspace backend run dev`
+- `npm --workspace backend run build`
+- `npm --workspace backend run start`
+
+## Docker
+
+```bash
+docker-compose up --build
 ```
 
-## 🔧 开发指南
+这会启动：
 
-### 可用脚本
+- 前端：http://localhost:3000
+- 后端：http://localhost:3001
 
-**根目录:**
-- `npm run dev` - 同时启动前后端开发服务器
-- `npm run build` - 构建生产版本
-- `npm run test` - 运行所有测试
+## API 文档
 
-**前端:**
-- `npm run dev` - 启动开发服务器
-- `npm run build` - 构建生产版本
-- `npm run preview` - 预览生产构建
+详见：
 
-**后端:**
-- `npm run dev` - 启动开发服务器
-- `npm run build` - 编译TypeScript
-- `npm run start` - 启动生产服务器
+- [API.md](./docs/API.md)
+- [ENVIRONMENT.md](./docs/ENVIRONMENT.md)
+- [PROJECT_SUMMARY.md](./docs/PROJECT_SUMMARY.md)
 
-### 贡献指南
+## 开源发布前检查
 
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
+- 仓库中的 `.env`、数据库文件、日志、构建产物已经被 `.gitignore` 屏蔽
+- README 和前端页面中的 GitHub 链接已改成占位符，请替换为你自己的仓库地址
+- 建议再次执行 `git status`，确认没有把本地环境文件带上去
 
-## 📄 许可证
+## 已知限制
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+- 当前没有用户系统，任何人都可以创建和删除二维码
+- Docker 方案默认使用 SQLite，适合演示和轻量部署
+- 浏览器端统计页目前以基础指标为主，没有做高级图表
 
-## 👥 团队
+## 许可证
 
-- **开发者** - 项目开发和维护
-
-## 📞 联系方式
-
-- 项目链接: [GitHub Repository](https://github.com/Albert-Lsk/qr-link-timer)
-- 问题反馈: [Issues](https://github.com/Albert-Lsk/qr-link-timer/issues)
-
-## 🔄 更新日志
-
-查看 [CHANGELOG.md](CHANGELOG.md) 了解项目更新历史
-
----
-
-⭐ 如果这个项目对您有帮助，请给我们一个星标！
+MIT

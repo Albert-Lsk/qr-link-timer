@@ -9,13 +9,13 @@ export default function Footer() {
             <p className="flex items-center space-x-1">
               <span>© 2024 QR Link Timer. Made with</span>
               <Heart className="h-4 w-4 text-red-500" />
-              <span>by Albert</span>
+              <span>for open source</span>
             </p>
           </div>
           
           <div className="flex items-center space-x-4">
             <a
-              href="https://github.com/Albert-Lsk/qr-link-timer"
+              href="https://github.com/your-github-username/qr-link-timer"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"

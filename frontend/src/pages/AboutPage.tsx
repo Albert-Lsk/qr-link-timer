@@ -1,4 +1,4 @@
-import { Github, Mail, Heart, Code, Shield, Zap } from 'lucide-react'
+import { Github, Heart, Code, Shield, Zap } from 'lucide-react'
 import { Card, CardHeader, CardBody } from '@/components/Card'
 import Button from '@/components/Button'
 
@@ -7,32 +7,31 @@ export default function AboutPage() {
     {
       icon: Zap,
       title: '快速生成',
-      description: '一键生成高质量二维码，支持多种尺寸和格式'
+      description: '一键生成高质量二维码，支持多种有效期设置'
     },
     {
       icon: Shield,
-      title: '安全可靠',
-      description: '本地处理数据，不上传用户隐私信息到服务器'
+      title: '到期失效',
+      description: '二维码链接在过期后自动失效，避免继续扩散'
     },
     {
       icon: Code,
-      title: '开源免费',
-      description: '完全开源，基于MIT协议，欢迎贡献代码'
+      title: '开源可扩展',
+      description: '前后端分离，适合二次开发和部署到自己的环境'
     }
   ]
 
   const techStack = [
     { name: 'React 18', description: '现代化前端框架' },
-    { name: 'TypeScript', description: '类型安全的JavaScript' },
-    { name: 'Tailwind CSS', description: '实用程序优先的CSS框架' },
-    { name: 'Vite', description: '快速的构建工具' },
+    { name: 'TypeScript', description: '类型安全的 JavaScript' },
+    { name: 'Tailwind CSS', description: '实用程序优先的 CSS 框架' },
+    { name: 'Vite', description: '快速构建工具' },
     { name: 'Node.js', description: '后端运行环境' },
-    { name: 'Prisma', description: '现代化数据库工具' }
+    { name: 'Prisma + SQLite', description: '轻量数据层，后续可切 PostgreSQL' }
   ]
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      {/* Header */}
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold text-gray-900">关于 QR Link Timer</h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -40,35 +39,31 @@ export default function AboutPage() {
         </p>
       </div>
 
-      {/* Project Description */}
       <Card>
         <CardHeader>
           <h2 className="text-2xl font-bold text-gray-900">项目简介</h2>
         </CardHeader>
         <CardBody className="space-y-4">
           <p className="text-gray-700 leading-relaxed">
-            QR Link Timer 是一个专为需要临时分享链接的场景而设计的工具。
-            它允许用户创建具有时效性的二维码，当达到设定的过期时间后，
-            二维码将自动失效，无法访问原始链接。
+            QR Link Timer 用来解决“链接发出去后没法控时效”的问题。你可以给任意 URL 生成一个二维码，
+            并为它设置过期时间，到期后扫描会得到失效提示页。
           </p>
           <p className="text-gray-700 leading-relaxed">
-            这个项目特别适用于临时文件分享、活动链接、限时优惠等需要控制访问时间的场景。
-            通过设置合理的有效期，可以有效保护隐私和控制信息传播范围。
+            它适合临时文件分享、活动页面、限时优惠、会议资料、私密入口等需要控制访问时间的场景。
           </p>
         </CardBody>
       </Card>
 
-      {/* Features */}
       <Card>
         <CardHeader>
           <h2 className="text-2xl font-bold text-gray-900">核心特性</h2>
         </CardHeader>
         <CardBody>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, index) => {
+            {features.map((feature) => {
               const Icon = feature.icon
               return (
-                <div key={index} className="text-center space-y-3">
+                <div key={feature.title} className="text-center space-y-3">
                   <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto">
                     <Icon className="h-8 w-8 text-primary-600" />
                   </div>
@@ -81,16 +76,15 @@ export default function AboutPage() {
         </CardBody>
       </Card>
 
-      {/* Tech Stack */}
       <Card>
         <CardHeader>
           <h2 className="text-2xl font-bold text-gray-900">技术栈</h2>
         </CardHeader>
         <CardBody>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {techStack.map((tech, index) => (
-              <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50">
-                <div className="w-2 h-2 bg-primary-600 rounded-full flex-shrink-0"></div>
+            {techStack.map((tech) => (
+              <div key={tech.name} className="flex items-center space-x-3 p-3 rounded-lg bg-gray-50">
+                <div className="w-2 h-2 bg-primary-600 rounded-full flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold text-gray-900">{tech.name}</h4>
                   <p className="text-sm text-gray-600">{tech.description}</p>
@@ -101,7 +95,6 @@ export default function AboutPage() {
         </CardBody>
       </Card>
 
-      {/* Contact & Links */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -109,51 +102,42 @@ export default function AboutPage() {
           </CardHeader>
           <CardBody className="space-y-4">
             <p className="text-gray-700">
-              本项目基于 MIT 协议开源，欢迎大家贡献代码、提出建议或报告问题。
+              本项目基于 MIT 协议开源，欢迎提出 Issue 或直接提交 Pull Request。
             </p>
-            <div className="space-y-2">
-              <Button
-                onClick={() => window.open('https://github.com/Albert-Lsk/qr-link-timer', '_blank')}
-                className="w-full justify-center"
-              >
-                <Github className="h-4 w-4 mr-2" />
-                访问 GitHub 仓库
-              </Button>
-            </div>
+            <Button
+              onClick={() => window.open('https://github.com/your-github-username/qr-link-timer', '_blank', 'noopener,noreferrer')}
+              className="w-full justify-center"
+            >
+              <Github className="h-4 w-4 mr-2" />
+              访问 GitHub 仓库
+            </Button>
           </CardBody>
         </Card>
 
         <Card>
           <CardHeader>
-            <h2 className="text-xl font-bold text-gray-900">联系方式</h2>
+            <h2 className="text-xl font-bold text-gray-900">发布提醒</h2>
           </CardHeader>
           <CardBody className="space-y-4">
             <p className="text-gray-700">
-              如果您有任何问题、建议或想要合作，欢迎联系我们。
+              在公开仓库前，请将文档和 `package.json` 中的 GitHub 占位链接替换为你自己的仓库地址，并确认环境变量不包含真实密钥。
             </p>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-3 text-gray-700">
-                <Mail className="h-4 w-4" />
-                <span>your.email@example.com</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-700">
-                <Github className="h-4 w-4" />
-                <span>@Albert-Lsk</span>
-              </div>
+            <div className="flex items-center space-x-3 text-gray-700">
+              <Github className="h-4 w-4" />
+              <span>@your-github-username</span>
             </div>
           </CardBody>
         </Card>
       </div>
 
-      {/* Footer */}
       <Card>
         <CardBody className="text-center space-y-3">
           <div className="flex items-center justify-center space-x-2 text-gray-700">
             <Heart className="h-5 w-5 text-red-500" />
-            <span>感谢您使用 QR Link Timer</span>
+            <span>感谢使用 QR Link Timer</span>
           </div>
           <p className="text-sm text-gray-500">
-            如果这个项目对您有帮助，请给我们一个 ⭐ Star！
+            如果这个项目对你有帮助，欢迎在开源仓库里点个 Star。
           </p>
         </CardBody>
       </Card>

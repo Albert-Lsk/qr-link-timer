@@ -11,7 +11,7 @@ COPY tailwind.config.js ./
 COPY postcss.config.js ./
 
 # 安装依赖
-RUN npm ci --only=production --silent
+RUN npm ci --silent
 
 # 复制源代码
 COPY src/ ./src/

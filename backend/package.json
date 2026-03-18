@@ -1,0 +1,55 @@
+{
+  "name": "qr-link-timer-backend",
+  "version": "1.0.0",
+  "description": "QR Link Timer - 后端API服务",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx src/scripts/seed.ts",
+    "lint": "eslint src --ext .ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
+    "joi": "^17.13.3",
+    "qrcode": "^1.5.4",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.23",
+    "@types/node": "^20.19.9",
+    "@types/qrcode": "^1.5.5",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.57.1",
+    "jest": "^29.7.0",
+    "prisma": "^5.22.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  },
+  "keywords": [
+    "qr-code",
+    "timer",
+    "api",
+    "express",
+    "prisma",
+    "sqlite"
+  ],
+  "author": "Albert",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

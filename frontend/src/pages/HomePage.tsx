@@ -1,13 +1,19 @@
 import { useState } from 'react'
 import { Link2, Clock, BarChart3, Shield } from 'lucide-react'
-import { Card, CardHeader, CardBody } from '@/components/Card'
+import { Card, CardBody } from '@/components/Card'
 import QRCodeGenerator from '@/components/QRCodeGenerator'
 import StatsOverview from '@/components/StatsOverview'
+import { QRCode } from '@/types'
 
 export default function HomePage() {
+  const [statsRefreshKey, setStatsRefreshKey] = useState(0)
+
+  const handleCreated = (_qrCode: QRCode) => {
+    setStatsRefreshKey((current) => current + 1)
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      {/* Hero Section */}
       <div className="text-center space-y-4">
         <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
           QR Link Timer
@@ -17,7 +23,6 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Features */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardBody className="text-center space-y-3">
@@ -56,20 +61,16 @@ export default function HomePage() {
         </Card>
       </div>
 
-      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* QR Code Generator */}
         <div className="lg:col-span-2">
-          <QRCodeGenerator />
+          <QRCodeGenerator onCreated={handleCreated} />
         </div>
 
-        {/* Stats Sidebar */}
         <div>
-          <StatsOverview />
+          <StatsOverview refreshKey={statsRefreshKey} />
         </div>
       </div>
 
-      {/* Security Notice */}
       <Card>
         <CardBody>
           <div className="flex items-start space-x-3">
@@ -79,9 +80,9 @@ export default function HomePage() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">安全提示</h3>
               <ul className="text-gray-600 space-y-1 text-sm">
-                <li>• 所有生成的二维码均在本地处理，确保隐私安全</li>
-                <li>• 过期的二维码将自动失效，无法访问原始链接</li>
-                <li>• 建议为重要链接设置合适的有效期</li>
+                <li>• 过期后的二维码会自动失效，无法继续访问原始链接</li>
+                <li>• 建议为重要链接设置合适的有效期并定期清理历史记录</li>
+                <li>• 开源发布前请使用环境变量配置生产地址和密钥</li>
               </ul>
             </div>
           </div>
